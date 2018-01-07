@@ -5,13 +5,23 @@ using Microsoft.Owin;
 
 namespace GraphiQL
 {
-    public class GraphiQlConfig
+    internal class GraphiQlConfig
     {
-        public PathString Path { get; private set; }
+        internal GraphQlOptions Options { get; }
 
-        public void SetPath(PathString path)
+        private GraphiQlConfig(GraphQlOptions options)
         {
-            Path = path;
+            Options = options;
         }
+
+        internal static GraphQlOptions Bootstrap(GraphQlOptions options)
+        {
+            return new GraphiQlConfig(options).Options;
+        }
+    }
+
+    internal class GraphQlOptions
+    {
+        internal PathString Path { get; set; }
     }
 }

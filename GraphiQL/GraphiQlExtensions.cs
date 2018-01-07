@@ -16,41 +16,35 @@ namespace GraphiQL
     {
         public static IAppBuilder UseGraphiQl(this IAppBuilder app)
         {
-            return UseGraphiQl(app, "/graphql");
+            return UseGraphiQl(app, GraphiQlConfig.Bootstrap);
         }
 
-        public static IAppBuilder UseGraphiQl(this IAppBuilder app, string path)
-        {
-            if (String.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(nameof(path));
-            }
-
-            path = path.StartsWith("/") ? path : "/" + path;
-            return UseGraphiQl(app, x => x.SetPath(new PathString(path)));
-        }
-
-        private static IAppBuilder UseGraphiQl(this IAppBuilder app, Action<GraphiQlConfig> setConfig)
+        private static IAppBuilder UseGraphiQl(this IAppBuilder app, Func<GraphQlOptions, GraphQlOptions> config)
         {
             if (app == null)
             {
                 throw new ArgumentNullException(nameof(app));
             }
 
-            if (setConfig == null)
+            if (config == null)
             {
-                throw new ArgumentNullException(nameof(setConfig));
+                throw new ArgumentNullException(nameof(config));
             }
 
-            var config = new GraphiQlConfig();
-            setConfig(config);
-
             var assembly = typeof(GraphiQlExtensions).GetTypeInfo().Assembly;
+
+            var path = "/graphql";
+            path = path.StartsWith("/") ? path : "/" + path;
+
+            var graphQlOptions = new GraphQlOptions
+            {
+                Path = new PathString(path)
+            };
 
             var options = new FileServerOptions
             {
                 EnableDefaultFiles = true,
-                RequestPath = config.Path,
+                RequestPath = config(graphQlOptions).Path,
                 FileSystem = new EmbeddedResourceFileSystem(assembly, "GraphiQL.assets"),
                 StaticFileOptions = {ContentTypeProvider = new FileExtensionContentTypeProvider()},
             };
