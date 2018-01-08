@@ -6,7 +6,10 @@ namespace GraphiQl.Example.GraphQl.Models
     {
         public DroidType()
         {
-            Field(x => x.Id, nullable: true);
+            Name = "Droid";
+            Description = "A mechanical creature in the Star Wars universe.";
+
+            Field(x => x.Id, nullable: true).Description("The Id of the droid.");
             Field(x => x.Name, nullable: true).Description("The name of the Droid.");
         }
     }

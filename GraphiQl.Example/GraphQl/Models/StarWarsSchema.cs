@@ -5,9 +5,9 @@ namespace GraphiQl.Example.GraphQl.Models
 {
     public class StarWarsSchema : Schema
     {
-        public StarWarsSchema()
+        public StarWarsSchema(Func<Type, GraphType> resolveType) : base(resolveType)
         {
-            Query = new StarWarsQuery(new StarWarsData());
+            Query = (StarWarsQuery)resolveType(typeof(StarWarsQuery));
         }
     }
 }

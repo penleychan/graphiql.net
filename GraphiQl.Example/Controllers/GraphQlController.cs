@@ -15,6 +15,13 @@ namespace GraphiQl.Example.Controllers
     [Route("graphql")]
     public class GraphQlController : ApiController
     {
+        private readonly ISchema _schema;
+
+        public GraphQlController(ISchema schema)
+        {
+            _schema = schema;
+        }
+
         [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody] GraphQlQuery query)
         {
@@ -22,7 +29,7 @@ namespace GraphiQl.Example.Controllers
 
             var result = await new DocumentExecuter().ExecuteAsync(x =>
             {
-                x.Schema = new StarWarsSchema();
+                x.Schema = _schema;
                 x.Query = query.Query;
                 x.Inputs = query.Variables.ToInputs();
             });

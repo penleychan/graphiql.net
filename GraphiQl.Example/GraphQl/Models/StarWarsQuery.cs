@@ -7,11 +7,13 @@ namespace GraphiQl.Example.GraphQl.Models
     {
         public StarWarsQuery(StarWarsData data)
         {
-            Name = "Query";
+            Name = "StarWarsContext";
+            Description = "StarWars Context";
 
             Func<ResolveFieldContext, string, object> func = (context, id) => data.GetDroidByIdAsync(id);
             FieldDelegate<DroidType>(
                 "droid",
+                "Get droid by Id",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "id", Description = "id of the droid" }
                 ),
