@@ -5,10 +5,12 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Results;
 using GraphiQl.Example.GraphQl;
 using GraphiQl.Example.GraphQl.Models;
 using GraphQL;
 using GraphQL.Types;
+using Newtonsoft.Json;
 
 namespace GraphiQl.Example.Controllers
 {
@@ -27,19 +29,28 @@ namespace GraphiQl.Example.Controllers
         {
             if (query == null) { throw new ArgumentNullException(nameof(query)); }
 
-            var result = await new DocumentExecuter().ExecuteAsync(x =>
+            var exectionOptions = new ExecutionOptions
             {
-                x.Schema = _schema;
-                x.Query = query.Query;
-                x.Inputs = query.Variables.ToInputs();
-            });
+                Schema = _schema,
+                Query = query.Query,
+                Inputs = query.Variables.ToInputs()
+            };
 
-            if (result.Errors?.Count > 0)
+            try
             {
-                return BadRequest(result.Errors.ToString());
+                var result = await new DocumentExecuter().ExecuteAsync(exectionOptions).ConfigureAwait(false);
+
+                if (result.Errors?.Count > 0)
+                {
+                    return Json(result.Errors);
+                }
+
+                return Ok(result);
             }
-
-            return Ok(result);
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }
